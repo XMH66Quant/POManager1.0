@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PO Extractor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Purchase Order Extractor</h2>
+
+{% if error %}
+  <div class="error">{{ error }}</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+
+<div class="row">
+  <div class="field">
+    <label>AI Model</label>
+    <select name="ai_model">
+      {% for model in models %}
+        <option value="{{ model }}">{{ model }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="field">
+    <label>API Key</label>
+    <input type="password" id="api_key" name="api_key" required>
+    <small id="apiError" style="color:red; display:none;">
+      API Key is required
+    </small>
+  </div>
+</div>
+
+<div class="field">
+  <label>Upload PDF(s)</label>
+  <input type="file" id="fileInput" name="file" accept=".pdf" multiple required>
+  <small id="fileName" style="color:#555;"></small>
+</div>
+
+<button type="submit">Process</button>
+
+</form>
+
+{% if json_output %}
+<div class="results">
+
+  <!-- Download buttons -->
+  <div class="block">
+    <button onclick="downloadJSON()">Download JSON</button>
+    <button onclick="downloadCSV()">Download CSV</button>
+  </div>
+
+  <!-- JSON preview -->
+  <div class="block">
+    <h3>JSON Output</h3>
+    <pre id="jsonData">{{ json_output }}</pre>
+  </div>
+
+  <!-- CSV preview -->
+  <div class="block">
+    <h3>CSV Output</h3>
+    <table>
+      <thead>
+        <tr>
+          {% for key in csv_data[0].keys() %}
+            <th>{{ key }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in csv_data %}
+        <tr>
+          {% for val in row.values() %}
+            <td>{{ val }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endif %}
+
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
